@@ -1,5 +1,6 @@
 rootProject.name = 'skilltracker-cloud'
 
 include 'config-service'
+include 'discovery-service'
 include 'user-service'
 include 'skill-service'
