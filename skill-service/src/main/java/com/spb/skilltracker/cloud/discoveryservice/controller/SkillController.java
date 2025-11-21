@@ -17,4 +17,9 @@ public class SkillController {
     public UserResponse test(@PathVariable Long id) {
         return userClient.getUserById(id);
     }
+
+    @GetMapping("/skills")
+    public String getSkills() {
+        return "Here's your skills";
+    }
 }
