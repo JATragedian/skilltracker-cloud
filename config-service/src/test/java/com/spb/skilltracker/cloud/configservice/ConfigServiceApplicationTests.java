@@ -1,4 +1,4 @@
-package com.spb.skilltracker.cloud.config_service;
+package com.spb.skilltracker.cloud.configservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
