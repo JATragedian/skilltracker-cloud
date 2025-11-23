@@ -1,182 +1,141 @@
 # SkillTracker Cloud
+A microservices-based Spring Cloud project demonstrating modern backend architecture, observability, tracing, metrics, and monitoring.
 
-SkillTracker is a microservices-based learning project designed to
-explore Spring Boot, Spring Cloud, Observability (Micrometer /
-OpenTelemetry), Resilience4j, and other Spring ecosystem modules.
+This project includes:
+
+- Spring Cloud Gateway
+- User Service
+- Skill Service
+- Config Server
+- Discovery Server (Eureka)
+- Distributed Tracing with Zipkin
+- Metrics via Prometheus
+- Dashboards via Grafana
 
 ## Project Structure
 
-    skilltracker-cloud/
-     ├── config-service
-     ├── discovery-service (Eureka)
-     ├── gateway-service
-     ├── user-service
-     ├── skill-service
-     └── config-repo/ (remote config for Spring Cloud Config)
-
-## Features
-
-### ✔ User Service
-
-Simple REST service returning a test user.
-
-### ✔ Skill Service
-
-Foundation service for skill management.
-
-### ✔ Gateway Service
-
-Spring Cloud Gateway routing all API requests.
-
-### ✔ Eureka Discovery Server
-
-Automatic service registration.
-
-### ✔ Config Server
-
-Centralized configuration storage.
-
-### ✔ Distributed Tracing
-
-Using: - Micrometer Tracing\
-- OpenTelemetry bridge\
-- Zipkin exporter
-
-------------------------------------------------------------------------
-
-# 🚀 How to Run the Project
-
-## 1️⃣ Start Zipkin (Tracing)
-
-``` bash
-docker run -d -p 9411:9411 openzipkin/zipkin
+```
+skilltracker-cloud/
+│
+├── gateway-service/
+├── user-service/
+├── skill-service/
+├── discovery-service/
+├── config-service/
+│
+└── monitoring/
+    ├── prometheus.yml
+    └── spring-microservices-dashboard.json
 ```
 
-Open UI:
+## How to Run the Entire System
 
-    http://localhost:9411
+Below is the correct order to start all components.
 
-## 2️⃣ Start Config Service
+### 1. Start Zipkin (Tracing)
 
-``` bash
-cd config-service
-./gradlew bootRun
+```bash
+docker run -d -p 9411:9411 --name zipkin openzipkin/zipkin
 ```
 
-## 3️⃣ Start Discovery Service (Eureka)
+Open Zipkin UI:
 
-``` bash
-cd discovery-service
-./gradlew bootRun
+http://localhost:9411  
+Click **Run Query** to see traces.
+
+### 2. Start Prometheus (Metrics Collector)
+
+Prometheus config file is located at:
+
+```
+monitoring/prometheus.yml
 ```
 
-Open Eureka dashboard:
+Run:
 
-    http://localhost:8761
-
-## 4️⃣ Start Gateway, User, and Skill Services
-
-Recommended order:
-
-1.  gateway-service\
-2.  user-service\
-3.  skill-service
-
-Run each with:
-
-``` bash
-./gradlew bootRun
+```bash
+docker run -d ^
+  -p 9560:9090 ^
+  -v C:\Users\isaev\IdeaProjects\skilltracker-cloud\monitoring\prometheus.yml:/etc/prometheus/prometheus.yml ^
+  --name prometheus ^
+  prom/prometheus
 ```
 
-You should see:
+Prometheus UI:  
+http://localhost:9560  
+Prometheus targets:  
+http://localhost:9560/targets
 
-    GATEWAY-SERVICE — UP
-    USER-SERVICE   — UP
-    SKILL-SERVICE  — UP
+You should see 3 UP targets.
 
-------------------------------------------------------------------------
+### 3. Start Grafana (Dashboards)
 
-# 🌐 Test the API
-
-### Get user by ID:
-
-    GET http://localhost:8080/users/1
-
-### Get skill by ID:
-
-    GET http://localhost:8080/skills/1
-
-------------------------------------------------------------------------
-
-# 🔍 Distributed Tracing in Zipkin
-
-Go to:
-
-    http://localhost:9411
-
-Every request generates: - one **traceId** for the entire request -
-several **spanId** entries for each step (Gateway → Service → DB)
-
-------------------------------------------------------------------------
-
-# ⚙ Tracing Configuration (Micrometer + OpenTelemetry)
-
-Each service contains:
-
-``` yaml
-management:
-  tracing:
-    enabled: true
-    sampling:
-      probability: 1.0
-
-  zipkin:
-    tracing:
-      endpoint: http://localhost:9411/api/v2/spans
-
-logging:
-  pattern:
-    level: "%5p [${spring.application.name},%X{traceId:-},%X{spanId:-}]"
+```bash
+docker run -d ^
+  -p 3000:3000 ^
+  --name grafana ^
+  grafana/grafana
 ```
 
-------------------------------------------------------------------------
+Grafana:  
+http://localhost:3000  
+Login: admin / admin
 
-# 🧪 Actuator Health Checks
+Add Prometheus as a data source:
 
-    http://localhost:<port>/actuator/health
-
-------------------------------------------------------------------------
-
-# 🐞 Troubleshooting
-
-### ❗ Eureka shows host like `*.mshome.net`
-
-This can happen on Windows after DNS resets.
-
-Fix:
-
-``` yaml
-eureka:
-  instance:
-    hostname: localhost
-    prefer-ip-address: true
+```
+http://host.docker.internal:9560
 ```
 
-------------------------------------------------------------------------
+Import dashboard:  
+Monitoring → Dashboards → Import → Upload `spring-microservices-dashboard.json`
 
-# 📌 Roadmap
+### 4. Start Spring Cloud Services (in order)
 
-1.  Spring Core, Boot, Web ✔\
-2.  Validation, JPA ✔\
-3.  Spring Cloud ✔\
-4.  Resilience4j ✔\
-5.  Micrometer Tracing + OTel ✔\
-6.  Prometheus + Grafana (upcoming)\
-7.  Actuator Deep Dive\
-8.  Batch / Integration / WebSockets / GraphQL
+1. Config Server  
+2. Discovery Server  
+3. Gateway Service  
+4. User Service  
+5. Skill Service  
 
-------------------------------------------------------------------------
+## Available Endpoints
 
-# 📧 Author
+### Eureka
+http://localhost:8761
 
-**Aleksandr Isaev**
+### Gateway Routes
+```
+GET http://localhost:8080/users/1
+GET http://localhost:8080/skills/1
+```
+
+### Prometheus Metrics
+```
+/actuator/prometheus
+```
+
+### Zipkin UI
+http://localhost:9411
+
+### Grafana UI
+http://localhost:3000
+
+## Observability Overview
+
+- Micrometer Tracing → OpenTelemetry → Zipkin  
+- Micrometer Metrics → Prometheus  
+- Dashboards → Grafana  
+
+## Technologies Used
+
+- Spring Boot 3  
+- Spring Cloud 2023.x  
+- Spring Cloud Gateway  
+- Eureka Server  
+- Config Server  
+- Micrometer  
+- OpenTelemetry  
+- Zipkin  
+- Prometheus  
+- Grafana  
+- Docker  

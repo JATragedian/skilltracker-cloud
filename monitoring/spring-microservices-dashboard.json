@@ -1,0 +1,130 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": "prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom" }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count[1m])) by (application)",
+          "legendFormat": "{{application}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Requests per Second (RPS)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "prometheus",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+      "id": 2,
+      "options": {},
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket[5m])) by (application, le))",
+          "legendFormat": "{{application}} (p95)",
+          "refId": "A"
+        }
+      ],
+      "title": "Latency p95 (5 min)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "prometheus",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+      "id": 3,
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count{status!=\"200\"}[1m])) by (application, status)",
+          "legendFormat": "{{application}} - {{status}}",
+          "refId": "A"
+        }
+      ],
+      "title": "HTTP Errors per Second",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "prometheus",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 24 },
+      "id": 4,
+      "targets": [
+        {
+          "expr": "sum(rate(spring_cloud_gateway_requests_seconds_count[1m])) by (routeId)",
+          "legendFormat": "{{routeId}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Gateway Route Traffic",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 32 },
+      "id": 5,
+      "targets": [
+        {
+          "expr": "jvm_memory_used_bytes{area=\"heap\"}",
+          "legendFormat": "{{application}}",
+          "refId": "A"
+        }
+      ],
+      "title": "JVM Heap Usage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 32 },
+      "id": 6,
+      "targets": [
+        {
+          "expr": "jvm_threads_live_threads",
+          "legendFormat": "{{application}}",
+          "refId": "A"
+        }
+      ],
+      "title": "JVM Live Threads",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 36,
+  "style": "dark",
+  "tags": ["spring", "microservices", "prometheus"],
+  "templating": {
+    "list": []
+  },
+  "time": { "from": "now-15m", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Spring Microservices Observability",
+  "version": 1,
+  "weekStart": ""
+}
