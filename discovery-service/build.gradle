@@ -1,7 +1,4 @@
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
-    implementation 'io.micrometer:micrometer-tracing-bridge-otel'
-    implementation 'io.opentelemetry:opentelemetry-exporter-zipkin'
-    implementation 'io.opentelemetry:opentelemetry-sdk-extension-autoconfigure'
 }
