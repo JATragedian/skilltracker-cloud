@@ -1,7 +1,7 @@
-package com.spb.skilltracker.cloud.discoveryservice.controller;
+package com.spb.skilltracker.cloud.skillservice.controller;
 
-import com.spb.skilltracker.cloud.discoveryservice.client.UserClient;
-import com.spb.skilltracker.cloud.discoveryservice.dto.UserResponse;
+import com.spb.skilltracker.cloud.skillservice.client.UserClient;
+import com.spb.skilltracker.cloud.skillservice.dto.UserResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

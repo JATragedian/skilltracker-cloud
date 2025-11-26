@@ -1,16 +1,8 @@
 # SkillTracker Cloud
-A microservices-based Spring Cloud project demonstrating modern backend architecture, observability, tracing, metrics, and monitoring.
 
-This project includes:
+SkillTracker Cloud is a microservices-based Spring Cloud system demonstrating modern backend architecture with centralized configuration, service discovery, API gateway routing, event-driven communication (Kafka), and a complete observability stack (Zipkin, Prometheus, Grafana).
 
-- Spring Cloud Gateway
-- User Service
-- Skill Service
-- Config Server
-- Discovery Server (Eureka)
-- Distributed Tracing with Zipkin
-- Metrics via Prometheus
-- Dashboards via Grafana
+---
 
 ## Project Structure
 
@@ -23,119 +15,121 @@ skilltracker-cloud/
 ├── discovery-service/
 ├── config-service/
 │
+├── docker-compose.yml
+│
 └── monitoring/
     ├── prometheus.yml
     └── spring-microservices-dashboard.json
 ```
 
-## How to Run the Entire System
+---
 
-Below is the correct order to start all components.
+## Running the Infrastructure
 
-### 1. Start Zipkin (Tracing)
+All infrastructure components run with a single command using `docker-compose`.
 
-```bash
-docker run -d -p 9411:9411 --name zipkin openzipkin/zipkin
-```
-
-Open Zipkin UI:
-
-http://localhost:9411  
-Click **Run Query** to see traces.
-
-### 2. Start Prometheus (Metrics Collector)
-
-Prometheus config file is located at:
-
-```
-monitoring/prometheus.yml
-```
-
-Run:
+In the project root:
 
 ```bash
-docker run -d ^
-  -p 9560:9090 ^
-  -v C:\Users\isaev\IdeaProjects\skilltracker-cloud\monitoring\prometheus.yml:/etc/prometheus/prometheus.yml ^
-  --name prometheus ^
-  prom/prometheus
+docker compose up -d
 ```
 
-Prometheus UI:  
-http://localhost:9560  
-Prometheus targets:  
-http://localhost:9560/targets
+This launches:
 
-You should see 3 UP targets.
+- Zookeeper  
+- Kafka broker  
+- Zipkin (distributed tracing)  
+- Prometheus (metrics collection)  
+- Grafana (dashboards)
 
-### 3. Start Grafana (Dashboards)
+All containers run inside the shared Docker network `skillnet`.
 
-```bash
-docker run -d ^
-  -p 3000:3000 ^
-  --name grafana ^
-  grafana/grafana
-```
+---
 
-Grafana:  
-http://localhost:3000  
-Login: admin / admin
+## Running Spring Cloud Services
 
-Add Prometheus as a data source:
+After the infrastructure is up, you can start microservices from your IDE or manually:
 
-```
-http://host.docker.internal:9560
-```
+1. `config-service`  
+2. `discovery-service`  
+3. `gateway-service`  
+4. `user-service`  
+5. `skill-service`
 
-Import dashboard:  
-Monitoring → Dashboards → Import → Upload `spring-microservices-dashboard.json`
+Each service:
 
-### 4. Start Spring Cloud Services (in order)
+- retrieves configuration from Config Server  
+- registers itself in Eureka Discovery Server  
+- becomes reachable through the API Gateway  
 
-1. Config Server  
-2. Discovery Server  
-3. Gateway Service  
-4. User Service  
-5. Skill Service  
+---
 
-## Available Endpoints
+## Service URLs
 
-### Eureka
+### Eureka Dashboard  
 http://localhost:8761
 
-### Gateway Routes
+### API Gateway  
+Examples:
+
 ```
-GET http://localhost:8080/users/1
-GET http://localhost:8080/skills/1
+POST http://localhost:8080/users
+GET  http://localhost:8080/skills
 ```
 
-### Prometheus Metrics
-```
-/actuator/prometheus
-```
+---
 
-### Zipkin UI
+## Observability
+
+### Zipkin (Tracing)
 http://localhost:9411
 
-### Grafana UI
-http://localhost:3000
+### Prometheus (Metrics)
+http://localhost:9560  
+Targets: http://localhost:9560/targets
 
-## Observability Overview
+### Grafana (Dashboards)
+http://localhost:3000  
+Login: `admin / admin`
 
-- Micrometer Tracing → OpenTelemetry → Zipkin  
-- Micrometer Metrics → Prometheus  
-- Dashboards → Grafana  
+Prometheus data source URL inside Docker network:
 
-## Technologies Used
+```
+http://prometheus:9090
+```
 
-- Spring Boot 3  
-- Spring Cloud 2023.x  
-- Spring Cloud Gateway  
-- Eureka Server  
-- Config Server  
-- Micrometer  
-- OpenTelemetry  
-- Zipkin  
-- Prometheus  
-- Grafana  
-- Docker  
+You can import the dashboard file:
+
+```
+monitoring/spring-microservices-dashboard.json
+```
+
+---
+
+## Kafka Event Streaming
+
+Kafka is included in the infrastructure and is fully functional.  
+Services can publish and consume events using Spring Cloud Stream with the Kafka binder.
+
+No manual setup is required — Kafka starts automatically with `docker-compose`.
+
+---
+
+## Summary
+
+SkillTracker Cloud provides a clean example of a modern microservices architecture with:
+
+- API Gateway  
+- Distributed configuration  
+- Service discovery  
+- Kafka event streaming  
+- Full observability stack (Zipkin + Prometheus + Grafana)  
+- Single-command infrastructure startup
+
+Launch everything with:
+
+```bash
+docker compose up -d
+```
+
+Then start microservices from your IDE.

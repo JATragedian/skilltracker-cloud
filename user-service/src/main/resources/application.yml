@@ -8,6 +8,16 @@ spring:
   config:
     import: optional:configserver:http://localhost:8888
 
+  cloud:
+    stream:
+      bindings:
+        userCreated-out-0:
+          destination: user-created-topic
+          content-type: application/json
+      kafka:
+        binder:
+          brokers: localhost:9092
+
 eureka:
   instance:
     hostname: localhost

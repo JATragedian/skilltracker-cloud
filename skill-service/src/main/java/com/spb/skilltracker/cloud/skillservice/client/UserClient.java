@@ -1,6 +1,6 @@
-package com.spb.skilltracker.cloud.discoveryservice.client;
+package com.spb.skilltracker.cloud.skillservice.client;
 
-import com.spb.skilltracker.cloud.discoveryservice.dto.UserResponse;
+import com.spb.skilltracker.cloud.skillservice.dto.UserResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

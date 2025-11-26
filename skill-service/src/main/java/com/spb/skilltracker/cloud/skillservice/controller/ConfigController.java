@@ -1,4 +1,4 @@
-package com.spb.skilltracker.cloud.discoveryservice.controller;
+package com.spb.skilltracker.cloud.skillservice.controller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
